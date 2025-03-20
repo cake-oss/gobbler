@@ -1,0 +1,22 @@
+version = 1
+SPDX-PackageName = "cake-gobbler"
+SPDX-PackageSupplier = "Cake AI Technologies, Inc."
+SPDX-PackageDownloadLocation = "https://github.com/cake-oss/gobbler"
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 Cake AI Technologies, Inc."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [".gitignore", ".env.sample"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 Cake AI Technologies, Inc."
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["README.md", "CLAUDE.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 Cake AI Technologies, Inc."
+SPDX-License-Identifier = "CC-BY-4.0"

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cake-gobbler"
+version = "0.1.0"
+authors = [
+    {name = "Cake Gobbler Team"},
+]
+description = "PDF ingestion system with enhanced analysis and retrieval"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "weaviate-client>=4.11.1",
+    "sentence-transformers>=2.2.2",
+    "nltk>=3.8.1",
+    "langchain>=0.1.0",
+    "langchain-text-splitters>=0.0.1",
+    "pikepdf>=8.0.0",
+    "rich>=13.0.0",
+    "chardet>=5.0.0",
+    "python-dotenv>=1.0.0",
+    "typer>=0.9.0",
+    "tiktoken>=0.9.0",
+    "virtualenv>=20.29.3",
+    "pip>=25.0.1",
+    "ray[default]>=2.43.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/cake-oss/gobbler"
+"Bug Tracker" = "https://github.com/cake-oss/gobbler/issues"
+
+[project.scripts]
+gobbler = "cake_gobbler.cli.main:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
