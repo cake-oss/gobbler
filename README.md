@@ -74,14 +74,33 @@ Legacy scripts:
 
 ## Installation
 
-You can install the package using `uv` or `pip`:
+You can install the package using `uv`:
 
 ```bash
-# Install in development mode
-pip install -e .
-
-# Or use uv
+# Install as a tool
 uv tool install .
+
+# Now you can run the CLI directly
+gobbler --help
+```
+
+### Uninstallation
+
+```bash
+# Uninstall the CLI
+uv tool uninstall cake-gobbler
+```
+
+### Development Mode
+
+During development, you can run the CLI without installing it:
+
+```bash
+# Run directly with uv
+uv run cake_gobbler/cli/main.py --help
+
+# Or run the main script
+uv run main.py --help
 ```
 
 ## Configuration
