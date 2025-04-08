@@ -79,7 +79,9 @@ class IngestionManager:
 
         if self._embedding_model_managers is None:
             self.logger.info("Initializing embedding model managers. This can take a while...")
-            self._embedding_model_managers = [EmbeddingModelManager.remote() for _ in range(2)]
+            num_workers = self.config.processing.ray_workers
+            self.logger.info(f"Creating {num_workers} Ray workers for embedding model parallelism")
+            self._embedding_model_managers = [EmbeddingModelManager.remote() for _ in range(num_workers)]
             self.logger.info("Embedding model managers initialized.")
         return self._embedding_model_managers
     
@@ -394,7 +396,6 @@ class IngestionManager:
                 import torch
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
-                    self.logger.info("CUDA cache cleared")
             except Exception as e:
                 self.logger.error(f"Error clearing CUDA cache: {str(e)}")
             

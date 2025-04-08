@@ -18,6 +18,7 @@ from typing import List, Tuple
 def find_pdf_files(path: str) -> List[str]:
     """
     Find all PDF files in a directory or return a single file.
+    Skips hidden directories (those starting with a dot).
     
     Args:
         path: Path to a PDF file or directory of PDFs
@@ -30,6 +31,9 @@ def find_pdf_files(path: str) -> List[str]:
     if os.path.isdir(path):
         # Use os.walk to traverse all subdirectories
         for root, dirs, files in os.walk(path):
+            # Skip hidden directories (in-place modification of dirs)
+            dirs[:] = [d for d in dirs if not d.startswith('.')]
+            
             for file in files:
                 # Case-insensitive check for .pdf extension
                 if file.lower().endswith('.pdf'):

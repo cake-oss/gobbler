@@ -8,6 +8,9 @@ Main CLI module for the Cake Gobbler RAG system.
 This module provides the main CLI interface for the application.
 """
 
+from rich.traceback import install
+install()
+
 import sys
 import os
 from pathlib import Path
@@ -31,7 +34,7 @@ from cake_gobbler.utils.logging import configure_logging
 from cake_gobbler.utils.file_utils import find_pdf_files
 
 # Create Typer app
-app = typer.Typer(help="Cake Gobbler RAG - PDF Ingestion System")
+app = typer.Typer(help="Cake Gobbler RAG - PDF Ingestion System", no_args_is_help=True)
 console = Console()
 
 logger = configure_logging()
@@ -54,6 +57,7 @@ def ingest_pdfs(
     run_name: Optional[str] = typer.Option(None, "--run-name", help="Specify a human-readable name for the run"),
     query: Optional[str] = typer.Option(None, "--query", help="Search query to run after processing"),
     ray_address: Optional[str] = typer.Option(None, "--ray-address", help="Ray cluster address (e.g., 'ray://localhost:10001'). If not provided, local Ray will be used."),
+    ray_workers: int = typer.Option(1, "--ray-workers", help="Number of Ray workers for embedding model parallelism"),
 ):
     """Ingest PDFs into Weaviate with analysis and chunking."""
     # Set up logging with proper verbose flag
@@ -94,7 +98,8 @@ def ingest_pdfs(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             embedding_model=embedding_model,
-            db_path=db_path
+            db_path=db_path,
+            ray_workers=ray_workers
         ),
         verbose=verbose,
         collection=collection,
