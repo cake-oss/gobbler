@@ -13,7 +13,6 @@ install()
 
 import sys
 import os
-from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables first, before any other imports
@@ -21,7 +20,7 @@ load_dotenv()
 
 import json
 import re
-from typing import Optional, List
+from typing import Optional
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -790,7 +789,7 @@ def ingestion_details(
             pass
 
 
-def _display_run_stats(run_stats, verbose=False):
+def _display_run_stats(run_stats):
     """Display run statistics in a formatted table."""
     table = Table(show_header=True, header_style="bold magenta", expand=False)
     table.add_column("Property")

@@ -12,7 +12,7 @@ collection creation, and storage of embeddings.
 import json
 import logging
 import uuid
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 import datetime
  
 import weaviate
