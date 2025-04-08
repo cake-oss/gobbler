@@ -124,14 +124,11 @@ class WeaviateManager:
         
         try:
             # Check if collection exists
-            collection_exists = False
             try:
                 collection = self.client.collections.get(collection_name)
-                collection_exists = True
-                self.logger.info(f"Collection '{collection_name}' exists in Weaviate")
+                self.debug.info(f"Collection '{collection_name}' = {collection}")
                 return collection
             except Exception:
-                collection_exists = False
                 self.logger.info(f"Collection '{collection_name}' does not exist in Weaviate")
             
             # Create new collection
