@@ -79,7 +79,13 @@ def ingest_pdfs(
     # Initialize Ray based on the provided address
     if ray_address:
         console.print(f"Connecting to Ray cluster at: [bold]{ray_address}[/bold]")
-        ray.init(address=ray_address)
+        ray.init(
+            address=ray_address, 
+            runtime_env={
+                "working_dir": ".",
+                "excludes": [".venv/**", "**/__pycache__/**", ".git/**", "**/*.pyc", "**/.pytest_cache/**"]
+            }
+        )
     else:
         logger.info("Using local Ray cluster")
         ray.init()
@@ -163,7 +169,7 @@ def ingest_pdfs(
         console.print("\n[bold green]Run completed.[/bold green]")
         
         # Display run statistics
-        _display_run_stats(run_stats, verbose)
+        _display_run_stats(run_stats)
         
         # Optionally run search query if provided
         if query:
