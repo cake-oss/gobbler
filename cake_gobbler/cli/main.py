@@ -383,11 +383,11 @@ def query(
     collection: str = typer.Argument(..., help="Collection to search in"),
     embedding_model: str = typer.Option("BAAI/bge-large-en-v1.5", "--embedding-model", help="Embedding model to use"),
     limit: int = typer.Option(5, "--limit", help="Maximum number of results to return"),
-    weaviate_host: str = typer.Option("weaviate.weaviate", "--weaviate-host", help="Weaviate HTTP host"),
-    weaviate_port: int = typer.Option(80, "--weaviate-port", help="Weaviate HTTP port"),
-    weaviate_grpc_host: str = typer.Option("weaviate-grpc.weaviate", "--weaviate-grpc-host", help="Weaviate gRPC host"),
-    weaviate_grpc_port: int = typer.Option(50051, "--weaviate-grpc-port", help="Weaviate gRPC port"),
-    weaviate_timeout: int = typer.Option(60, "--weaviate-timeout", help="Weaviate connection timeout in seconds"),
+    weaviate_host: str = typer.Option(os.environ.get("WEAVIATE_HTTP_HOST", "weaviate.weaviate"), "--weaviate-host", help="Weaviate HTTP host"),
+    weaviate_port: int = typer.Option(os.environ.get("WEAVIATE_HTTP_PORT", 80), "--weaviate-port", help="Weaviate HTTP port"),
+    weaviate_grpc_host: str = typer.Option(os.environ.get("WEAVIATE_GRPC_HOST", "weaviate-grpc.weaviate"), "--weaviate-grpc-host", help="Weaviate gRPC host"),
+    weaviate_grpc_port: int = typer.Option(os.environ.get("WEAVIATE_GRPC_PORT", 50051), "--weaviate-grpc-port", help="Weaviate gRPC port"),
+    weaviate_timeout: int = typer.Option(os.environ.get("WEAVIATE_TIMEOUT", 60), "--weaviate-timeout", help="Weaviate connection timeout in seconds"),
 ):
     """Search for chunks in a collection."""
     from sentence_transformers import SentenceTransformer

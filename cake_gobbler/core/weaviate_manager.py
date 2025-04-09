@@ -11,6 +11,7 @@ collection creation, and storage of embeddings.
 
 import json
 import logging
+import os
 import uuid
 from typing import Dict, List, Any
 import datetime
@@ -193,6 +194,7 @@ class WeaviateManager:
                     chunk_metadata["chunk_index"] = i
                     ingestion_timestamp = datetime.datetime.now(datetime.timezone.utc)
                     
+                    # Define base properties based on the schema
                     properties = {
                         "text": chunk,
                         "full_path": chunk_metadata.get("full_path", ""),
@@ -200,10 +202,11 @@ class WeaviateManager:
                         "total_chunks": chunk_metadata.get("total_chunks", 0),
                         "ts": ingestion_timestamp
                     }
-
-                    # Add all metadata key-value pairs to properties
-                    for key, value in metadata.items():
-                        properties[key] = value
+                    
+                    # Only add additional metadata from schema-defined fields
+                    # This prevents trying to store undefined properties
+                    # The schema includes: text, full_path, chunk_index, total_chunks, ts
+                    # Any other fields are ignored to prevent Weaviate from rejecting the object
                     
                     batch.add_object(
                         properties=properties,
@@ -238,7 +241,7 @@ class WeaviateManager:
             near_vector=query_embedding,
             limit=limit,
             include_vector=False,
-            return_properties=["text", "metadata_str"]
+            return_properties=["text", "full_path", "chunk_index", "total_chunks"]
         )
         
         # Format results
@@ -246,12 +249,15 @@ class WeaviateManager:
         for i, obj in enumerate(results.objects):
             props = obj.properties if hasattr(obj, "properties") else {}
             text = props.get("text", "No text available")
-            metadata_str = props.get("metadata_str", "{}")
+            full_path = props.get("full_path", "")
             
-            try:
-                metadata = json.loads(metadata_str)
-            except json.JSONDecodeError:
-                metadata = {}
+            # Extract metadata from available properties
+            metadata = {
+                "source": os.path.basename(full_path),
+                "full_path": full_path,
+                "chunk_index": props.get("chunk_index", 0),
+                "total_chunks": props.get("total_chunks", 0)
+            }
                 
             formatted_results.append({
                 "text": text,
