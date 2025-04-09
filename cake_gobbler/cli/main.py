@@ -8,9 +8,11 @@ Main CLI module for the Cake Gobbler RAG system.
 This module provides the main CLI interface for the application.
 """
 
+from rich.traceback import install
+install()
+
 import sys
 import os
-from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables first, before any other imports
@@ -18,7 +20,7 @@ load_dotenv()
 
 import json
 import re
-from typing import Optional, List
+from typing import Optional
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -31,7 +33,7 @@ from cake_gobbler.utils.logging import configure_logging
 from cake_gobbler.utils.file_utils import find_pdf_files
 
 # Create Typer app
-app = typer.Typer(help="Cake Gobbler RAG - PDF Ingestion System")
+app = typer.Typer(help="Cake Gobbler RAG - PDF Ingestion System", no_args_is_help=True)
 console = Console()
 
 logger = configure_logging()
@@ -54,6 +56,7 @@ def ingest_pdfs(
     run_name: Optional[str] = typer.Option(None, "--run-name", help="Specify a human-readable name for the run"),
     query: Optional[str] = typer.Option(None, "--query", help="Search query to run after processing"),
     ray_address: Optional[str] = typer.Option(None, "--ray-address", help="Ray cluster address (e.g., 'ray://localhost:10001'). If not provided, local Ray will be used."),
+    ray_workers: int = typer.Option(1, "--ray-workers", help="Number of Ray workers for embedding model parallelism"),
 ):
     """Ingest PDFs into Weaviate with analysis and chunking."""
     # Set up logging with proper verbose flag
@@ -76,7 +79,13 @@ def ingest_pdfs(
     # Initialize Ray based on the provided address
     if ray_address:
         console.print(f"Connecting to Ray cluster at: [bold]{ray_address}[/bold]")
-        ray.init(address=ray_address)
+        ray.init(
+            address=ray_address, 
+            runtime_env={
+                "working_dir": ".",
+                "excludes": [".venv/**", "**/__pycache__/**", ".git/**", "**/*.pyc", "**/.pytest_cache/**"]
+            }
+        )
     else:
         logger.info("Using local Ray cluster")
         ray.init()
@@ -94,7 +103,8 @@ def ingest_pdfs(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             embedding_model=embedding_model,
-            db_path=db_path
+            db_path=db_path,
+            ray_workers=ray_workers
         ),
         verbose=verbose,
         collection=collection,
@@ -159,7 +169,7 @@ def ingest_pdfs(
         console.print("\n[bold green]Run completed.[/bold green]")
         
         # Display run statistics
-        _display_run_stats(run_stats, verbose)
+        _display_run_stats(run_stats)
         
         # Optionally run search query if provided
         if query:
@@ -785,7 +795,7 @@ def ingestion_details(
             pass
 
 
-def _display_run_stats(run_stats, verbose=False):
+def _display_run_stats(run_stats):
     """Display run statistics in a formatted table."""
     table = Table(show_header=True, header_style="bold magenta", expand=False)
     table.add_column("Property")

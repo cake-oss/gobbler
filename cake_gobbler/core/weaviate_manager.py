@@ -13,7 +13,7 @@ import json
 import logging
 import os
 import uuid
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 import datetime
  
 import weaviate
@@ -123,18 +123,14 @@ class WeaviateManager:
         if not self.client:
             self.connect()
         
-        try:
-            # Check if collection exists
-            collection_exists = False
-            try:
-                collection = self.client.collections.get(collection_name)
-                collection_exists = True
-                self.logger.info(f"Collection '{collection_name}' exists in Weaviate")
-                return collection
-            except Exception:
-                collection_exists = False
-                self.logger.info(f"Collection '{collection_name}' does not exist in Weaviate")
-            
+        # Check if collection exists
+        collection_exists = self.client.collections.exists(collection_name)
+        self.logger.debug(f"Collection '{collection_name}' exists = {collection_exists}")
+
+        if collection_exists:
+            self.logger.info(f"Collection '{collection_name}' already exists")
+            return self.client.collections.get(collection_name)
+        else:
             # Create new collection
             self.logger.info(f"Creating new collection '{collection_name}'")
             collection = self.client.collections.create(
@@ -162,7 +158,7 @@ class WeaviateManager:
                     },
                     {
                         "name": "ts",
-                        "data_type": DataType.DATETIME,
+                        "data_type": DataType.DATE,
                         "description": "The timestamp of the ingestion"
                     }
                     
@@ -171,10 +167,6 @@ class WeaviateManager:
             )
             self.logger.info(f"Created collection '{collection_name}'")
             return collection
-        except Exception as e:
-            error_msg = f"Error creating/getting collection: {str(e)}"
-            self.logger.error(error_msg)
-            raise
     
     def store_chunks(self, collection, chunks: List[str], embeddings: List[List[float]], metadata: Dict[str, Any]) -> None:
         """

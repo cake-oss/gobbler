@@ -10,11 +10,11 @@ analyzing, extracting text, chunking, embedding, and storing in Weaviate.
 """
 
 import json
-import logging
 import os
-from typing import Dict, List, Any, Optional, Tuple
+import logging
+from typing import List
 
-from cake_gobbler.models.config import AppConfig, WeaviateConfig, ProcessingConfig
+from cake_gobbler.models.config import AppConfig
 from cake_gobbler.core.pdf_processor import PDFProcessor
 
 from cake_gobbler.core.db_manager import DatabaseManager
@@ -39,10 +39,9 @@ class IngestionManager:
         Raises:
             ConnectionError: If unable to connect to Weaviate
         """
-        
+        self.logger = logging.getLogger("cake-gobbler.ingestion")
 
         self.config = app_config
-        self.logger = logging.getLogger("cake-gobbler.ingestion")
         self.logger.info("Initializing ingestion manager...")
         from cake_gobbler.core.text_processor import TextProcessor
         self.logger.info("TextProcessor imported")
@@ -79,7 +78,7 @@ class IngestionManager:
 
         if self._embedding_model_managers is None:
             self.logger.info("Initializing embedding model managers. This can take a while...")
-            self._embedding_model_managers = [EmbeddingModelManager.remote() for _ in range(2)]
+            self._embedding_model_managers = [EmbeddingModelManager.remote() for _ in range(self.config.processing.ray_workers)]
             self.logger.info("Embedding model managers initialized.")
         return self._embedding_model_managers
     
@@ -128,9 +127,11 @@ class IngestionManager:
         
         # Pre-load the embedding model at the start of the run
         refs = []
+        self.logger.info(f"Loading embedding model in {self.config.processing.ray_workers} workers.")
         for embedding_model_manager in self.get_embedding_model_managers():
             refs.append(embedding_model_manager.load_embedding_model.remote(self.config.processing.embedding_model))
         ray.get(refs)
+        self.logger.info(f"Embedding model loaded in {self.config.processing.ray_workers} workers.")
         
         return run_id
     
@@ -394,7 +395,6 @@ class IngestionManager:
                 import torch
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
-                    self.logger.info("CUDA cache cleared")
             except Exception as e:
                 self.logger.error(f"Error clearing CUDA cache: {str(e)}")
             

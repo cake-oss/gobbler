@@ -34,6 +34,7 @@ class ProcessingConfig:
     chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "20"))
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-large-en-v1.5")
     db_path: str = os.getenv("DB_PATH", "cake-gobbler-log.db")
+    ray_workers: int = int(os.getenv("RAY_WORKERS", "1"))
 
 
 @dataclass
