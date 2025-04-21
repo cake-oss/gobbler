@@ -117,6 +117,8 @@ Key configuration options:
 - `WEAVIATE_GRPC_PORT`: Weaviate gRPC port (default: 50051)
 - `WEAVIATE_TIMEOUT`: Weaviate connection timeout in seconds (default: 60)
 
+Note: When using command line flags, use `--weaviate-host` and `--weaviate-port` (without the "HTTP" in the parameter name).
+
 ### PDF Processing
 
 - `CHUNK_SIZE`: Number of tokens per chunk (default: 1024)

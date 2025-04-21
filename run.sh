@@ -22,6 +22,8 @@ function show_usage {
     echo "  --limit N           Limit for listing runs (default: 10)"
     echo "  --weaviate-host H   Specify Weaviate HTTP host (overrides .env)"
     echo "  --weaviate-port P   Specify Weaviate HTTP port (overrides .env)"
+    echo "  --weaviate-grpc-host H   Specify Weaviate gRPC host (overrides .env)"
+    echo "  --weaviate-grpc-port P   Specify Weaviate gRPC port (overrides .env)"
     echo "  --help              Show this help message"
     echo ""
     echo "Examples:"
@@ -100,13 +102,13 @@ while [[ $# -gt 0 ]]; do
             LIMIT="$2"
             shift 2
             ;;
-        --weaviate-http-host)
-            WEAVIATE_HTTP_HOST="--weaviate-http-host $2"
+        --weaviate-host)
+            WEAVIATE_HTTP_HOST="--weaviate-host $2"
             echo "Using Weaviate HTTP host: $2"
             shift 2
             ;;
-        --weaviate-http-port)
-            WEAVIATE_HTTP_PORT="--weaviate-http-port $2"
+        --weaviate-port)
+            WEAVIATE_HTTP_PORT="--weaviate-port $2"
             echo "Using Weaviate HTTP port: $2"
             shift 2
             ;;
@@ -118,6 +120,16 @@ while [[ $# -gt 0 ]]; do
         --weaviate-grpc-port)
             WEAVIATE_GRPC_PORT="--weaviate-grpc-port $2"
             echo "Using Weaviate gRPC port: $2"
+            shift 2
+            ;;
+        --weaviate-http-host)
+            WEAVIATE_HTTP_HOST="--weaviate-host $2"
+            echo "Using Weaviate HTTP host: $2"
+            shift 2
+            ;;
+        --weaviate-http-port)
+            WEAVIATE_HTTP_PORT="--weaviate-port $2"
+            echo "Using Weaviate HTTP port: $2"
             shift 2
             ;;
         --list-runs)

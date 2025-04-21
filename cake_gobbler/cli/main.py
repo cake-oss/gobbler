@@ -45,8 +45,8 @@ def ingest_pdfs(
     chunk_size: int = typer.Option(1024, "--chunk-size", help="Number of tokens per chunk"),
     chunk_overlap: int = typer.Option(20, "--chunk-overlap", help="Number of tokens to overlap between chunks"),
     embedding_model: str = typer.Option("BAAI/bge-large-en-v1.5", "--embedding-model", help="Embedding model to use"),
-    weaviate_host: str = typer.Option(os.environ.get("WEAVIATE_HTTP_HOST", "weaviate.weaviate"), "--weaviate-host", help="Weaviate HTTP host"),
-    weaviate_port: int = typer.Option(os.environ.get("WEAVIATE_HTTP_PORT", 80), "--weaviate-port", help="Weaviate HTTP port"),
+    weaviate_http_host: str = typer.Option(os.environ.get("WEAVIATE_HTTP_HOST", "weaviate.weaviate"), "--weaviate-host", help="Weaviate HTTP host"),
+    weaviate_http_port: int = typer.Option(os.environ.get("WEAVIATE_HTTP_PORT", 80), "--weaviate-port", help="Weaviate HTTP port"),
     weaviate_grpc_host: str = typer.Option(os.environ.get("WEAVIATE_GRPC_HOST", "weaviate-grpc.weaviate"), "--weaviate-grpc-host", help="Weaviate gRPC host"),
     weaviate_grpc_port: int = typer.Option(os.environ.get("WEAVIATE_GRPC_PORT", 50051), "--weaviate-grpc-port", help="Weaviate gRPC port"),
     weaviate_timeout: int = typer.Option(os.environ.get("WEAVIATE_TIMEOUT", 60), "--weaviate-timeout", help="Weaviate connection timeout in seconds"),
@@ -93,8 +93,8 @@ def ingest_pdfs(
     # Create configuration
     app_config = AppConfig(
         weaviate=WeaviateConfig(
-            http_host=weaviate_host,
-            http_port=weaviate_port,
+            http_host=weaviate_http_host,
+            http_port=weaviate_http_port,
             grpc_host=weaviate_grpc_host,
             grpc_port=weaviate_grpc_port,
             timeout=weaviate_timeout
@@ -124,7 +124,7 @@ def ingest_pdfs(
     
     try:
         # Display connection info
-        logger.info(f"Weaviate connection: HTTP {weaviate_host}:{weaviate_port}, gRPC {weaviate_grpc_host}:{weaviate_grpc_port}")
+        logger.info(f"Weaviate connection: HTTP {weaviate_http_host}:{weaviate_http_port}, gRPC {weaviate_grpc_host}:{weaviate_grpc_port}")
         
         # Verify Weaviate connection before starting the run
         try:
@@ -132,7 +132,7 @@ def ingest_pdfs(
             console.print("[bold green]Successfully connected to Weaviate![/bold green]")
         except ConnectionError as e:
             console.print(f"[bold red]Error: Could not connect to Weaviate: {str(e)}[/bold red]")
-            console.print(f"[bold yellow]Please verify that Weaviate is running at {weaviate_host}:{weaviate_port}[/bold yellow]")
+            console.print(f"[bold yellow]Please verify that Weaviate is running at {weaviate_http_host}:{weaviate_http_port}[/bold yellow]")
             sys.exit(1)
             
         # Start a new run
@@ -383,8 +383,8 @@ def query(
     collection: str = typer.Argument(..., help="Collection to search in"),
     embedding_model: str = typer.Option("BAAI/bge-large-en-v1.5", "--embedding-model", help="Embedding model to use"),
     limit: int = typer.Option(5, "--limit", help="Maximum number of results to return"),
-    weaviate_host: str = typer.Option(os.environ.get("WEAVIATE_HTTP_HOST", "weaviate.weaviate"), "--weaviate-host", help="Weaviate HTTP host"),
-    weaviate_port: int = typer.Option(os.environ.get("WEAVIATE_HTTP_PORT", 80), "--weaviate-port", help="Weaviate HTTP port"),
+    weaviate_http_host: str = typer.Option(os.environ.get("WEAVIATE_HTTP_HOST", "weaviate.weaviate"), "--weaviate-host", help="Weaviate HTTP host"),
+    weaviate_http_port: int = typer.Option(os.environ.get("WEAVIATE_HTTP_PORT", 80), "--weaviate-port", help="Weaviate HTTP port"),
     weaviate_grpc_host: str = typer.Option(os.environ.get("WEAVIATE_GRPC_HOST", "weaviate-grpc.weaviate"), "--weaviate-grpc-host", help="Weaviate gRPC host"),
     weaviate_grpc_port: int = typer.Option(os.environ.get("WEAVIATE_GRPC_PORT", 50051), "--weaviate-grpc-port", help="Weaviate gRPC port"),
     weaviate_timeout: int = typer.Option(os.environ.get("WEAVIATE_TIMEOUT", 60), "--weaviate-timeout", help="Weaviate connection timeout in seconds"),
@@ -400,8 +400,8 @@ def query(
     
     # Create Weaviate configuration
     weaviate_config = WeaviateConfig(
-        http_host=weaviate_host,
-        http_port=weaviate_port,
+        http_host=weaviate_http_host,
+        http_port=weaviate_http_port,
         grpc_host=weaviate_grpc_host,
         grpc_port=weaviate_grpc_port,
         timeout=weaviate_timeout
@@ -413,7 +413,7 @@ def query(
     
     try:
         # Display connection info
-        console.print(f"Weaviate HTTP connection: [bold]{weaviate_host}:{weaviate_port}[/bold]")
+        console.print(f"Weaviate HTTP connection: [bold]{weaviate_http_host}:{weaviate_http_port}[/bold]")
         console.print(f"Weaviate gRPC connection: [bold]{weaviate_grpc_host}:{weaviate_grpc_port}[/bold]")
         
         # Connect to Weaviate
@@ -422,7 +422,7 @@ def query(
             console.print("[bold green]Successfully connected to Weaviate![/bold green]")
         except ConnectionError as e:
             console.print(f"[bold red]Error: Could not connect to Weaviate: {str(e)}[/bold red]")
-            console.print(f"[bold yellow]Please verify that Weaviate is running at {weaviate_host}:{weaviate_port}[/bold yellow]")
+            console.print(f"[bold yellow]Please verify that Weaviate is running at {weaviate_http_host}:{weaviate_http_port}[/bold yellow]")
             sys.exit(1)
         
         # Load embedding model
